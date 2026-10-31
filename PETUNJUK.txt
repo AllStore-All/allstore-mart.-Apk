@@ -1,0 +1,26 @@
+ALLSTORE Mart — Aplikasi kasir warung Android
+
+ISI FITUR
+- Dashboard omzet, transaksi, jumlah produk, dan estimasi laba hari ini
+- Kasir: pilih barang, atur jumlah, pembayaran Tunai atau QRIS
+- Barang: tambah, edit, hapus produk, harga modal/jual, stok, kategori
+- Stok otomatis berkurang setelah transaksi
+- Peringatan stok menipis (5 atau kurang)
+- Laporan total omzet, estimasi laba, jumlah transaksi, dan riwayat
+- Ekspor/impor cadangan data JSON
+- Tanpa barcode dan tanpa struk belanja
+
+CARA MEMAKAI DI ANDROID
+Cara paling mudah adalah mengunggah isi folder ini ke hosting HTTPS (misalnya GitHub Pages atau hosting web milik sendiri), lalu:
+1. Buka alamat website aplikasi di Chrome Android.
+2. Tekan menu ⋮ Chrome.
+3. Pilih "Tambahkan ke layar utama" atau "Install app" jika tersedia.
+4. Buka ALLSTORE Mart dari ikon di layar utama.
+
+CATATAN
+- Ini adalah PWA (aplikasi web yang dapat dipasang di Android), bukan file APK native.
+- Service worker membuat aplikasi dapat dibuka offline setelah pertama kali dimuat melalui HTTPS.
+- Data disimpan lokal di browser/perangkat. Jangan hapus data browser sebelum mengekspor cadangan.
+- Data tidak otomatis tersinkron ke HP lain.
+- QRIS hanya dicatat sebagai metode pembayaran; aplikasi tidak memverifikasi pembayaran QRIS secara otomatis.
+- Uji transaksi dan cadangkan data sebelum dipakai untuk pencatatan toko sungguhan.

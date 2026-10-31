@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0757a6">
+  <meta name="description" content="Aplikasi kasir dan stok warung ALLSTORE Mart">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>ALLSTORE Mart</title>
+  <style>
+    :root{--blue:#0757a6;--red:#e32935;--yellow:#ffd52a;--ink:#172033;--muted:#687386;--bg:#f3f6fa;--line:#e5eaf1;--green:#16834a}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+    button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:11px 14px;font-weight:700}
+    .top{background:var(--blue);color:#fff;padding:16px 16px 18px;position:sticky;top:0;z-index:5;box-shadow:0 3px 14px #102b4a22}
+    .brand{display:flex;align-items:center;gap:10px}.mark{width:42px;height:42px;border-radius:12px;background:var(--yellow);color:var(--blue);display:grid;place-items:center;font-weight:1000;font-size:19px;border:3px solid white}
+    .brand h1{font-size:19px;margin:0;letter-spacing:.2px}.brand small{opacity:.85}
+    .topline{display:flex;justify-content:space-between;align-items:center;gap:12px}.date{font-size:12px;opacity:.85;text-align:right}
+    .tabs{display:flex;gap:7px;overflow:auto;padding:10px 12px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:76px;z-index:4}
+    .tab{white-space:nowrap;background:#edf2f8;color:#41516a;padding:9px 13px;border-radius:999px;font-size:13px}.tab.active{background:var(--yellow);color:#172033}
+    main{max-width:900px;margin:auto;padding:14px 13px 95px}.page{display:none}.page.active{display:block}
+    .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat,.panel,.product{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 2px 7px #14243a08}
+    .stat .label{font-size:12px;color:var(--muted)}.stat strong{display:block;font-size:20px;margin-top:5px}.stat.blue{border-top:4px solid var(--blue)}.stat.red{border-top:4px solid var(--red)}.stat.yellow{border-top:4px solid var(--yellow)}.stat.green{border-top:4px solid var(--green)}
+    h2{font-size:18px;margin:18px 2px 10px}.muted{color:var(--muted);font-size:13px}.row{display:flex;gap:8px;align-items:center}.between{justify-content:space-between}.wrap{flex-wrap:wrap}
+    .primary{background:var(--blue);color:#fff}.danger{background:#fff0f0;color:#c21f2b}.soft{background:#edf2f8;color:#34445c}.yellow{background:var(--yellow);color:#202536}
+    .field{display:flex;flex-direction:column;gap:5px;margin:9px 0}.field label{font-size:12px;color:var(--muted);font-weight:700}.field input,.field select,.search{width:100%;border:1px solid #dce3ed;border-radius:11px;padding:11px;background:#fff;color:var(--ink);outline:none}
+    .field input:focus,.field select:focus,.search:focus{border-color:var(--blue);box-shadow:0 0 0 3px #0757a618}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.product-list{display:grid;gap:8px}.product{display:flex;justify-content:space-between;align-items:center;gap:10px}.product-name{font-weight:750}.price{font-size:13px;color:var(--blue);font-weight:800}.pill{font-size:11px;background:#edf2f8;padding:4px 8px;border-radius:99px;color:#516078}
+    .cartline{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}.qty{display:flex;align-items:center;gap:7px}.qty button{padding:5px 10px;background:#edf2f8}.total{font-size:22px;font-weight:900;color:var(--blue)}
+    .empty{text-align:center;padding:25px 12px;color:var(--muted);font-size:13px}.actions{display:flex;gap:7px}.actions button{padding:8px 10px;font-size:12px}
+    .history-item{padding:12px 0;border-bottom:1px solid var(--line)}.history-item:last-child{border:0}
+    .notice{background:#fff8d9;border:1px solid #f1df8b;color:#705800;padding:11px;border-radius:12px;font-size:12px;margin:12px 0}
+    .bottom-note{text-align:center;color:#8590a0;font-size:11px;padding:22px 0}
+    .hidden{display:none!important}
+    @media(min-width:650px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}.tabs{justify-content:center}.top{padding-left:max(16px,calc((100vw - 900px)/2));padding-right:max(16px,calc((100vw - 900px)/2))}}
+  </style>
+</head>
+<body>
+<header class="top">
+  <div class="topline">
+    <div class="brand"><div class="mark">A</div><div><h1>ALLSTORE Mart</h1><small>Kasir & Manajemen Warung</small></div></div>
+    <div class="date" id="today"></div>
+  </div>
+</header>
+<nav class="tabs">
+  <button class="tab active" data-page="home">Beranda</button>
+  <button class="tab" data-page="cashier">Kasir</button>
+  <button class="tab" data-page="products">Barang</button>
+  <button class="tab" data-page="reports">Laporan</button>
+  <button class="tab" data-page="settings">Pengaturan</button>
+</nav>
+<main>
+  <section class="page active" id="home">
+    <h2>Ringkasan toko</h2>
+    <div class="stats">
+      <div class="stat blue"><span class="label">Penjualan hari ini</span><strong id="todaySales">Rp0</strong></div>
+      <div class="stat red"><span class="label">Transaksi hari ini</span><strong id="todayCount">0</strong></div>
+      <div class="stat yellow"><span class="label">Jumlah produk</span><strong id="productCount">0</strong></div>
+      <div class="stat green"><span class="label">Perkiraan laba hari ini</span><strong id="todayProfit">Rp0</strong></div>
+    </div>
+    <h2>Perlu diperhatikan</h2>
+    <div class="panel" id="lowStock"><div class="empty">Belum ada barang yang perlu diperhatikan.</div></div>
+    <h2>Akses cepat</h2>
+    <div class="row wrap">
+      <button class="primary" onclick="showPage('cashier')">＋ Transaksi baru</button>
+      <button class="soft" onclick="showPage('products')">＋ Tambah barang</button>
+    </div>
+    <div class="notice">Data disimpan di perangkat ini. Ekspor cadangan secara berkala melalui menu Pengaturan.</div>
+  </section>
+
+  <section class="page" id="cashier">
+    <h2>Kasir</h2>
+    <div class="layout">
+      <div>
+        <input class="search" id="productSearch" placeholder="Cari nama barang..." oninput="renderCashierProducts()">
+        <div id="cashierProducts" class="product-list" style="margin-top:10px"></div>
+      </div>
+      <div class="panel">
+        <div class="row between"><strong>Keranjang belanja</strong><button class="soft" onclick="clearCart()">Kosongkan</button></div>
+        <div id="cart"><div class="empty">Belum ada barang dipilih.</div></div>
+        <div class="row between" style="margin-top:12px"><span>Total</span><span class="total" id="cartTotal">Rp0</span></div>
+        <div class="field"><label>Metode pembayaran</label><select id="payment"><option>Tunai</option><option>QRIS</option></select></div>
+        <div class="field" id="cashField"><label>Uang diterima</label><input id="cashReceived" type="number" min="0" placeholder="Masukkan nominal tunai" oninput="renderChange()"></div>
+        <div class="row between muted" id="changeRow"><span>Kembalian</span><strong id="change">Rp0</strong></div>
+        <button class="primary" style="width:100%;margin-top:14px" onclick="checkout()">Selesaikan transaksi</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="products">
+    <div class="row between"><h2>Daftar barang</h2><button class="primary" onclick="openProductForm()">＋ Tambah</button></div>
+    <input class="search" id="inventorySearch" placeholder="Cari barang..." oninput="renderProducts()">
+    <div id="productList" class="product-list" style="margin-top:10px"></div>
+    <div id="productForm" class="panel hidden" style="margin-top:12px">
+      <div class="row between"><strong id="formTitle">Tambah barang</strong><button class="soft" onclick="closeProductForm()">Tutup</button></div>
+      <input id="editId" type="hidden">
+      <div class="field"><label>Nama barang</label><input id="pName" placeholder="Contoh: Air mineral 600 ml"></div>
+      <div class="grid2">
+        <div class="field"><label>Harga modal (Rp)</label><input id="pCost" type="number" min="0" placeholder="3000"></div>
+        <div class="field"><label>Harga jual (Rp)</label><input id="pPrice" type="number" min="0" placeholder="4000"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Stok</label><input id="pStock" type="number" min="0" placeholder="20"></div>
+        <div class="field"><label>Kategori</label><select id="pCategory"><option>Makanan</option><option>Minuman</option><option>Sembako</option><option>Kebutuhan rumah</option><option>Lainnya</option></select></div>
+      </div>
+      <button class="primary" style="width:100%" onclick="saveProduct()">Simpan barang</button>
+    </div>
+  </section>
+
+  <section class="page" id="reports">
+    <h2>Laporan penjualan</h2>
+    <div class="stats">
+      <div class="stat blue"><span class="label">Total omzet</span><strong id="allSales">Rp0</strong></div>
+      <div class="stat green"><span class="label">Estimasi laba</span><strong id="allProfit">Rp0</strong></div>
+      <div class="stat red"><span class="label">Total transaksi</span><strong id="allCount">0</strong></div>
+      <div class="stat yellow"><span class="label">Barang terjual</span><strong id="itemsSold">0</strong></div>
+    </div>
+    <h2>Riwayat transaksi</h2>
+    <div class="panel" id="history"><div class="empty">Belum ada transaksi.</div></div>
+  </section>
+
+  <section class="page" id="settings">
+    <h2>Pengaturan toko</h2>
+    <div class="panel">
+      <div class="field"><label>Nama toko</label><input id="storeName" value="ALLSTORE Mart"></div>
+      <button class="primary" onclick="saveSettings()">Simpan nama toko</button>
+    </div>
+    <h2>Cadangan data</h2>
+    <div class="panel">
+      <p class="muted">Simpan salinan produk dan transaksi sebagai file JSON. Gunakan file ini untuk memindahkan atau memulihkan data.</p>
+      <div class="row wrap">
+        <button class="primary" onclick="exportData()">Ekspor data</button>
+        <button class="soft" onclick="document.getElementById('importFile').click()">Impor data</button>
+        <input id="importFile" type="file" accept="application/json" class="hidden" onchange="importData(event)">
+      </div>
+    </div>
+    <div class="notice">Aplikasi ini belum terhubung ke server/cloud. Data hanya tersimpan di browser/perangkat yang digunakan.</div>
+  </section>
+  <div class="bottom-note">ALLSTORE Mart • Aplikasi kasir sederhana untuk warung</div>
+</main>
+<script>
+const KEY='allstore_mart_v1';
+let state=loadState(), cart={};
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{products:[],sales:[],storeName:'ALLSTORE Mart'}}catch(e){return {products:[],sales:[],storeName:'ALLSTORE Mart'}}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+function rupiah(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0)}
+function dateKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(id==='reports')renderReports();if(id==='cashier')renderCashierProducts();if(id==='products')renderProducts()}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+document.getElementById('today').textContent=new Date().toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+function renderAll(){document.getElementById('storeName').value=state.storeName||'ALLSTORE Mart';renderHome();renderProducts();renderCashierProducts();renderCart();renderReports()}
+function renderHome(){
+ const today=state.sales.filter(s=>s.date===dateKey()),sales=today.reduce((a,s)=>a+s.total,0),profit=today.reduce((a,s)=>a+s.profit,0);
+ document.getElementById('todaySales').textContent=rupiah(sales);document.getElementById('todayCount').textContent=today.length;
+ document.getElementById('productCount').textContent=state.products.length;document.getElementById('todayProfit').textContent=rupiah(profit);
+ const low=state.products.filter(p=>p.stock<=5);
+ document.getElementById('lowStock').innerHTML=low.length?low.map(p=>`<div class="row between" style="padding:7px 0"><span>${esc(p.name)}</span><strong style="color:${p.stock===0?'#d22':'#9a6b00'}">${p.stock} tersisa</strong></div>`).join(''):'<div class="empty">Belum ada barang yang perlu diperhatikan.</div>';
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderProducts(){
+ const q=(document.getElementById('inventorySearch')?.value||'').toLowerCase(),items=state.products.filter(p=>p.name.toLowerCase().includes(q));
+ document.getElementById('productList').innerHTML=items.length?items.map(p=>`<div class="product"><div><div class="product-name">${esc(p.name)}</div><div class="muted">${esc(p.category)} • Stok: ${p.stock}</div><div class="price">${rupiah(p.price)} <span class="muted">/ modal ${rupiah(p.cost)}</span></div></div><div class="actions"><button class="soft" onclick="editProduct('${p.id}')">Edit</button><button class="danger" onclick="deleteProduct('${p.id}')">Hapus</button></div></div>`).join(''):'<div class="empty">Belum ada barang. Tekan Tambah untuk memasukkan produk.</div>';
+}
+function openProductForm(){document.getElementById('productForm').classList.remove('hidden');document.getElementById('formTitle').textContent='Tambah barang';document.getElementById('editId').value='';['pName','pCost','pPrice','pStock'].forEach(id=>document.getElementById(id).value='')}
+function closeProductForm(){document.getElementById('productForm').classList.add('hidden')}
+function editProduct(id){const p=state.products.find(x=>x.id===id);if(!p)return;openProductForm();document.getElementById('formTitle').textContent='Edit barang';document.getElementById('editId').value=id;document.getElementById('pName').value=p.name;document.getElementById('pCost').value=p.cost;document.getElementById('pPrice').value=p.price;document.getElementById('pStock').value=p.stock;document.getElementById('pCategory').value=p.category;document.getElementById('productForm').scrollIntoView({behavior:'smooth'})}
+function saveProduct(){
+ const id=document.getElementById('editId').value,name=document.getElementById('pName').value.trim(),cost=Number(document.getElementById('pCost').value),price=Number(document.getElementById('pPrice').value),stock=Number(document.getElementById('pStock').value),category=document.getElementById('pCategory').value;
+ if(!name||!Number.isFinite(cost)||!Number.isFinite(price)||!Number.isFinite(stock)||cost<0||price<0||stock<0){alert('Lengkapi data barang dengan angka yang benar.');return}
+ const p={id:id||String(Date.now()),name,cost,price,stock:Math.floor(stock),category};
+ if(id){const i=state.products.findIndex(x=>x.id===id);state.products[i]=p}else state.products.push(p);
+ closeProductForm();persist();
+}
+function deleteProduct(id){if(!confirm('Hapus barang ini?'))return;state.products=state.products.filter(p=>p.id!==id);delete cart[id];persist()}
+function renderCashierProducts(){const q=(document.getElementById('productSearch')?.value||'').toLowerCase(),items=state.products.filter(p=>p.name.toLowerCase().includes(q));document.getElementById('cashierProducts').innerHTML=items.length?items.map(p=>`<div class="product"><div><div class="product-name">${esc(p.name)}</div><div class="muted">Stok ${p.stock}</div><div class="price">${rupiah(p.price)}</div></div><button class="primary" ${p.stock<=0?'disabled':''} onclick="addCart('${p.id}')">Tambah</button></div>`).join(''):'<div class="empty">Barang belum tersedia. Tambahkan barang di menu Barang.</div>'}
+function addCart(id){const p=state.products.find(x=>x.id===id);if(!p)return;const n=cart[id]||0;if(n>=p.stock){alert('Stok tidak mencukupi.');return}cart[id]=n+1;renderCart()}
+function changeQty(id,delta){const p=state.products.find(x=>x.id===id);if(!p)return;const n=(cart[id]||0)+delta;if(n<=0)delete cart[id];else if(n<=p.stock)cart[id]=n;else alert('Stok tidak mencukupi.');renderCart()}
+function clearCart(){cart={};renderCart()}
+function cartItems(){return Object.entries(cart).map(([id,qty])=>{const p=state.products.find(x=>x.id===id);return p?{id,name:p.name,qty,price:p.price,cost:p.cost,subtotal:p.price*qty}:null}).filter(Boolean)}
+function renderCart(){
+ const items=cartItems(),total=items.reduce((a,x)=>a+x.subtotal,0);
+ document.getElementById('cart').innerHTML=items.length?items.map(x=>`<div class="cartline"><div><strong>${esc(x.name)}</strong><div class="muted">${rupiah(x.price)} × ${x.qty}</div></div><div class="qty"><button onclick="changeQty('${x.id}',-1)">−</button><b>${x.qty}</b><button onclick="changeQty('${x.id}',1)">+</button></div></div>`).join(''):'<div class="empty">Belum ada barang dipilih.</div>';
+ document.getElementById('cartTotal').textContent=rupiah(total);renderChange();
+}
+function renderChange(){const cash=Number(document.getElementById('cashReceived')?.value||0),total=cartItems().reduce((a,x)=>a+x.subtotal,0);document.getElementById('change').textContent=rupiah(Math.max(0,cash-total))}
+document.getElementById('payment').addEventListener('change',e=>{document.getElementById('cashField').classList.toggle('hidden',e.target.value!=='Tunai');document.getElementById('changeRow').classList.toggle('hidden',e.target.value!=='Tunai')});
+function checkout(){
+ const items=cartItems();if(!items.length){alert('Keranjang masih kosong.');return}
+ const total=items.reduce((a,x)=>a+x.subtotal,0),method=document.getElementById('payment').value,cash=Number(document.getElementById('cashReceived').value||0);
+ if(method==='Tunai'&&cash<total){alert('Uang diterima kurang dari total belanja.');return}
+ const profit=items.reduce((a,x)=>a+(x.price-x.cost)*x.qty,0);
+ items.forEach(x=>{const p=state.products.find(p=>p.id===x.id);p.stock-=x.qty});
+ state.sales.unshift({id:'TRX-'+Date.now(),date:dateKey(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),items,total,profit,method,cash:method==='Tunai'?cash:total,change:method==='Tunai'?cash-total:0});
+ cart={};document.getElementById('cashReceived').value='';persist();alert('Transaksi berhasil disimpan.');showPage('home');
+}
+function renderReports(){
+ const total=state.sales.reduce((a,s)=>a+s.total,0),profit=state.sales.reduce((a,s)=>a+s.profit,0),count=state.sales.length,items=state.sales.reduce((a,s)=>a+s.items.reduce((b,x)=>b+x.qty,0),0);
+ document.getElementById('allSales').textContent=rupiah(total);document.getElementById('allProfit').textContent=rupiah(profit);document.getElementById('allCount').textContent=count;document.getElementById('itemsSold').textContent=items;
+ document.getElementById('history').innerHTML=count?state.sales.map(s=>`<div class="history-item"><div class="row between"><strong>${s.id}</strong><span class="pill">${s.method}</span></div><div class="muted">${s.date} • ${s.time} • ${s.items.reduce((a,x)=>a+x.qty,0)} barang</div><div class="row between" style="margin-top:5px"><strong>${rupiah(s.total)}</strong><span class="muted">Laba ${rupiah(s.profit)}</span></div><div class="muted">${s.items.map(x=>esc(x.name)+' × '+x.qty).join(', ')}</div></div>`).join(''):'<div class="empty">Belum ada transaksi.</div>';
+}
+function saveSettings(){state.storeName=document.getElementById('storeName').value.trim()||'ALLSTORE Mart';document.querySelector('.brand h1').textContent=state.storeName;persist();alert('Nama toko disimpan.')}
+function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='cadangan-allstore-mart.json';a.click();URL.revokeObjectURL(url)}
+function importData(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.products)||!Array.isArray(d.sales))throw Error();if(confirm('Impor akan mengganti data saat ini. Lanjutkan?')){state={products:d.products,sales:d.sales,storeName:d.storeName||'ALLSTORE Mart'};persist();alert('Data berhasil diimpor.')}}catch(err){alert('File cadangan tidak valid.')}};r.readAsText(file);e.target.value=''}
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+renderAll();
+</script>
+</body>
+</html>

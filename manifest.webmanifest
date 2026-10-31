@@ -1,0 +1,17 @@
+{
+  "name": "ALLSTORE Mart",
+  "short_name": "ALLSTORE",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f3f6fa",
+  "theme_color": "#0757a6",
+  "description": "Aplikasi kasir dan stok warung ALLSTORE Mart",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
